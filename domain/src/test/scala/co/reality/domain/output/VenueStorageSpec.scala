@@ -37,7 +37,7 @@ class VenueStorageSpec extends AnyFlatSpec
   it should "save and load all venues" in {
     forAll(Gen.listOf(venue)) { venues =>
       val scenario = for {
-        _ <- ZIO.foreach_(venues)(VenueStorage.save(_))
+        _ <- ZIO.foreach_(venues)(VenueStorage.save)
         venues <- VenueStorage.loadAll()
       } yield venues
 
@@ -45,7 +45,7 @@ class VenueStorageSpec extends AnyFlatSpec
     }
   }
 
-  it should "update venue with  player id" in {
+  it should "update venue with player id" in {
     forAll(venue, playerId) { (venue, playerId) =>
       val scenario = for {
         _ <- VenueStorage.save(venue)
