@@ -1,3 +1,7 @@
 import Dependencies._
 
-libraryDependencies ++= commonDependencies ++ testDependencies
+libraryDependencies ++= commonDependencies ++
+                        testDependencies ++
+                        tapirDependencies ++
+                        circleDependencies :+
+                        http4sCircle

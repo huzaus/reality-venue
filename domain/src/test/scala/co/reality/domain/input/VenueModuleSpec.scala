@@ -3,6 +3,7 @@ package co.reality.domain.input
 import co.reality.domain.entity.EntityGen.{playerId, _}
 import co.reality.domain.error.{DomainError, VenueNotFound}
 import co.reality.domain.input.VenueModule.VenueService
+import co.reality.domain.output.VenueStorage
 import org.scalacheck.Gen
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -14,7 +15,7 @@ class VenueModuleSpec extends AnyFlatSpec
   with Matchers
   with ScalaCheckPropertyChecks {
 
-  val layer: ULayer[VenueService] = VenueModule.inMemoryLayer
+  val layer: ULayer[VenueService] = VenueStorage.inMemoryLayer >>> VenueModule.layer
 
   behavior of "VenueModule"
 

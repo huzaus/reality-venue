@@ -14,9 +14,11 @@ ThisBuild / scalacOptions := Seq("-unchecked",
                                  "-Xfatal-warnings",
                                  "-Ymacro-annotations")
 
+ThisBuild / libraryDependencies += compilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full)
+
 lazy val `reality-venue` = (project in file("."))
   .settings(publish := {})
-  .aggregate(`domain`)
+  .aggregate(`domain`, `api`)
 
 lazy val `domain` = (project in file("domain"))
 

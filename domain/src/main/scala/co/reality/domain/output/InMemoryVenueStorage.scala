@@ -3,7 +3,8 @@ package co.reality.domain.output
 import co.reality.domain.entity.{PlayerId, Venue, VenueId}
 import co.reality.domain.error.VenueStorageError
 import co.reality.domain.output.VenueStorage.{Service, VenueRepository}
-import zio.{Has, IO, Ref, ULayer, ZLayer}
+import zio.Runtime.default
+import zio.{Has, IO, Ref, UIO, ULayer, ZLayer}
 
 private[output] object InMemoryVenueStorage {
 
@@ -25,10 +26,12 @@ private[output] object InMemoryVenueStorage {
 
   })
 
-  val emptyState: ULayer[InMemoryState] = state(Map())
+  val sharedState: ULayer[InMemoryState] = ZLayer.succeed(default.unsafeRun(state(Map())))
 
-  def state(storage: Map[VenueId, Venue]): ULayer[InMemoryState] =
-    Ref.make(State(storage)).toLayer
+  val emptyState: ULayer[InMemoryState] = state(Map()).toLayer
+
+  def state(storage: Map[VenueId, Venue]): UIO[Ref[State]] =
+    Ref.make(State(storage))
 
 
   sealed case class State(storage: Map[VenueId, Venue]) {
@@ -41,7 +44,7 @@ private[output] object InMemoryVenueStorage {
     def readAll(): (Vector[Venue], State) =
       (storage.valuesIterator.toVector, this)
 
-    def read(id        : VenueId): (Option[Venue], State) =
+    def read(id: VenueId): (Option[Venue], State) =
       (storage.get(id), this)
   }
 

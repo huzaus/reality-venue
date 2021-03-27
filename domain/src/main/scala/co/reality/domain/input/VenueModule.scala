@@ -55,5 +55,5 @@ object VenueModule {
     }
   }
 
-  val inMemoryLayer: ULayer[VenueService] = VenueStorage.inMemoryLayer >>> layer
+  val inMemoryLayer: ULayer[VenueService] = VenueStorage.inMemorySharedLayer >>> layer
 }

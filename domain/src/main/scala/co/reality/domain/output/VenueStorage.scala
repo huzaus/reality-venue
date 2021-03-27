@@ -33,4 +33,7 @@ object VenueStorage {
 
   val inMemoryLayer: ULayer[VenueRepository] =
     InMemoryVenueStorage.emptyState >>> InMemoryVenueStorage.storage
+
+  val inMemorySharedLayer: ULayer[VenueRepository] =
+    InMemoryVenueStorage.sharedState >>> InMemoryVenueStorage.storage
 }
