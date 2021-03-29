@@ -70,6 +70,27 @@ class VenueStorageSpec extends AnyFlatSpec
     }
   }
 
+  it should "not fail on deleting non existing venue" in {
+    forAll(venueId) { id =>
+      val scenario = for {
+        _ <- VenueStorage.delete(id)
+        venue <- VenueStorage.load(id)
+      } yield venue
+      unsafeRun(scenario) shouldBe None
+    }
+  }
+
+  it should "delete existing venue" in {
+    forAll(venue) { venue =>
+      val scenario = for {
+        _ <- VenueStorage.save(venue)
+        _ <- VenueStorage.delete(venue.id)
+        venue <- VenueStorage.load(venue.id)
+      } yield venue
+      unsafeRun(scenario) shouldBe None
+    }
+  }
+
   def unsafeRun[T](scenario: ZIO[ZEnv with VenueRepository, VenueStorageError, T]): T = {
     default.unsafeRun(scenario.provideCustomLayer(layer))
   }

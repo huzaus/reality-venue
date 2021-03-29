@@ -26,15 +26,11 @@ class VenueRoutesSpec extends AnyFlatSpec
 
   behavior of "VenueRoutes"
 
-  it should "get empty result for empty state" in {
-    runtime.unsafeRun(getAll()).success shouldBe empty
-  }
-
   it should "put and get venue" in {
     forAll(venueRequest) { request =>
-      val id = UUID.randomUUID().toString
+      val id       = UUID.randomUUID().toString
       val scenario = for {
-        uuid <- putVenue(id, request)
+        uuid <- put(id, request)
         venues <- getAll()
       } yield (uuid.success, venues.success)
 
@@ -42,6 +38,23 @@ class VenueRoutesSpec extends AnyFlatSpec
 
       uuid shouldBe id
       venues should contain(Venue(id, request.name, request.price, None))
+    }
+  }
+
+  it should "put and delete venue" in {
+    forAll(venueRequest) { request =>
+      val id       = UUID.randomUUID().toString
+      val scenario = for {
+        putUuid <- put(id, request)
+        deleteUuid <- delete(id)
+        venues <- getAll()
+      } yield (putUuid.success, deleteUuid.success, venues.success)
+
+      val (putUuid, deleteUuid, venues) = runtime.unsafeRun(scenario)
+
+      putUuid shouldBe id
+      deleteUuid shouldBe id
+      venues.map(_.id) should not contain id
     }
   }
 

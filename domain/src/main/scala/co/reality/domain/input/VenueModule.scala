@@ -13,6 +13,8 @@ object VenueModule {
   trait Service {
     def create(venue: Venue): IO[DomainError, Unit]
 
+    def remove(id: VenueId): IO[DomainError, Unit]
+
     def assign(id: VenueId, playerId: PlayerId): IO[DomainError, Unit]
 
     def find(id: VenueId): IO[DomainError, Venue]
@@ -22,6 +24,9 @@ object VenueModule {
 
   def create(venue: Venue): ZIO[VenueService, DomainError, Unit] =
     ZIO.accessM[VenueService](_.get[Service].create(venue))
+
+  def remove(id: VenueId): ZIO[VenueService, DomainError, Unit] =
+    ZIO.accessM[VenueService](_.get[Service].remove(id))
 
   def assign(id: VenueId, playerId: PlayerId): ZIO[VenueService, DomainError, Unit] =
     ZIO.accessM[VenueService](_.get[Service].assign(id, playerId))
@@ -37,6 +42,9 @@ object VenueModule {
       new Service {
         override def create(venue: Venue): IO[DomainError, Unit] =
           venueStorage.save(venue)
+
+        override def remove(id: VenueId): IO[DomainError, Unit] =
+          venueStorage.delete(id)
 
         override def assign(id: VenueId, playerId: PlayerId): IO[DomainError, Unit] = for {
           _ <- find(id)

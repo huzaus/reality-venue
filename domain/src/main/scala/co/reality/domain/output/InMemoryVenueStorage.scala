@@ -14,6 +14,9 @@ private[output] object InMemoryVenueStorage {
     override def save(venue: Venue): IO[VenueStorageError, Unit] =
       state.get.update(_.save(venue))
 
+    override def delete(id: VenueId): IO[VenueStorageError, Unit] =
+      state.get.update(_.delete(id))
+
     override def update(id: VenueId, playerId: PlayerId): IO[VenueStorageError, Unit] =
       state.get.update(_.update(id, playerId))
 
@@ -22,7 +25,6 @@ private[output] object InMemoryVenueStorage {
 
     override def loadAll(): IO[VenueStorageError, Vector[Venue]] =
       state.get.modify(_.readAll())
-
 
   })
 
@@ -37,6 +39,9 @@ private[output] object InMemoryVenueStorage {
   sealed case class State(storage: Map[VenueId, Venue]) {
     def save(venue: Venue): State =
       copy(storage = storage.updated(venue.id, venue))
+
+    def delete(id: VenueId): State =
+      copy(storage = storage - id)
 
     def update(id: VenueId, playerId: PlayerId): State =
       copy(storage = storage.updatedWith(id)(_.map(_.copy(owner = Some(playerId)))))

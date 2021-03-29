@@ -16,11 +16,24 @@ trait VenueBehaviours {
 
   def app: HttpApp[RIO[Clock, *]]
 
-  def putVenue(id: String, putVenue: VenueRequest): RIO[Clock, Either[String, String]] = {
+  def put(id: String, putVenue: VenueRequest): RIO[Clock, Either[String, String]] = {
     val request: Request[RIO[Clock, *]] =
       Request(method = Method.PUT)
         .withUri(Uri(path = s"/$context/$id"))
         .withEntity(putVenue.asJson)
+    for {
+      response <- app.run(request)
+      entity <- response.status match {
+        case Status.Ok => response.bodyText.compile.string.map(_.asRight)
+        case _         => response.bodyText.compile.string.map(_.asLeft)
+      }
+    } yield entity
+  }
+
+  def delete(id: String): RIO[Clock, Either[String, String]] = {
+    val request: Request[RIO[Clock, *]] =
+      Request(method = Method.DELETE)
+        .withUri(Uri(path = s"/$context/$id"))
     for {
       response <- app.run(request)
       entity <- response.status match {

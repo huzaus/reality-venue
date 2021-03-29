@@ -11,6 +11,8 @@ object VenueStorage {
   trait Service {
     def save(venue: Venue): IO[VenueStorageError, Unit]
 
+    def delete(id: VenueId): IO[VenueStorageError, Unit]
+
     def update(id: VenueId, playerId: PlayerId): IO[VenueStorageError, Unit]
 
     def load(id: VenueId): IO[VenueStorageError, Option[Venue]]
@@ -20,6 +22,9 @@ object VenueStorage {
 
   def save(venue: Venue): ZIO[VenueRepository, VenueStorageError, Unit] =
     ZIO.accessM[VenueRepository](_.get[Service].save(venue))
+
+  def delete(id: VenueId): ZIO[VenueRepository, VenueStorageError, Unit] =
+    ZIO.accessM[VenueRepository](_.get[Service].delete(id))
 
   def update(id: VenueId, playerId: PlayerId): ZIO[VenueRepository, VenueStorageError, Unit] =
     ZIO.accessM[VenueRepository](_.get[Service].update(id, playerId))

@@ -1,6 +1,6 @@
 package co.reality.domain.input
 
-import co.reality.domain.entity.EntityGen.{playerId, _}
+import co.reality.domain.entity.EntityGen.{playerId, venue, _}
 import co.reality.domain.error.{DomainError, VenueNotFound}
 import co.reality.domain.input.VenueModule.VenueService
 import co.reality.domain.output.VenueStorage
@@ -36,6 +36,18 @@ class VenueModuleSpec extends AnyFlatSpec
       } yield venue
 
       unsafeRun(scenario) shouldBe venue
+    }
+  }
+
+  it should "create, delete and return VenueNotFound error" in {
+    forAll(venue) { venue =>
+      val scenario = for {
+        _ <- VenueModule.create(venue)
+        _ <- VenueModule.remove(venue.id)
+        venue <- VenueModule.find(venue.id)
+      } yield venue
+
+      unsafeRun(scenario.either) shouldBe Left(VenueNotFound(venue.id))
     }
   }
 
