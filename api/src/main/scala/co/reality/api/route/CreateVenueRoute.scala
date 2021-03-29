@@ -3,7 +3,7 @@ package co.reality.api.route
 import co.reality.api.route.VenueRoutes.context
 import co.reality.api.util.ZioRoutes
 import co.reality.api.util.ZioRoutes.ZioHttpRoutes
-import co.reality.api.view.VenueRequest
+import co.reality.api.view.PutVenueRequest
 import co.reality.domain.input.VenueModule
 import co.reality.domain.input.VenueModule.VenueService
 import sttp.tapir.generic.auto._
@@ -16,14 +16,14 @@ object CreateVenueRoute {
   def apply(layer: ULayer[VenueService]): ZioHttpRoutes =
     ZioRoutes(definition, handler(_), layer)
 
-  val definition: ZEndpoint[(String, VenueRequest), String, String] =
+  val definition: ZEndpoint[(String, PutVenueRequest), String, String] =
     endpoint.put
             .in(context / path[String]("id"))
-            .in(jsonBody[VenueRequest])
+            .in(jsonBody[PutVenueRequest])
             .errorOut(stringBody)
             .out(stringBody)
 
-  def handler(input: (String, VenueRequest)): ZIO[VenueService, String, String] = {
+  def handler(input: (String, PutVenueRequest)): ZIO[VenueService, String, String] = {
     val (id, putVenue) = input
     for {
       venue <- ZIO.fromEither(putVenue.toDomainModel(id))

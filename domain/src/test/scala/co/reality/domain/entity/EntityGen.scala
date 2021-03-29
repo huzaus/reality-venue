@@ -18,7 +18,7 @@ object EntityGen {
 
   val money: Gen[Long] = Gen.posNum[Long]
 
-  def venue: Gen[Venue] = venue()
+  val venue: Gen[Venue] = venue()
 
   def venue(venueId: Gen[VenueId] = venueId): Gen[Venue] = for {
     id <- venueId

@@ -2,7 +2,7 @@ package co.reality.api.route
 
 import cats.syntax.either._
 import co.reality.api.route.VenueRoutes.context
-import co.reality.api.view.{Venue, VenueRequest}
+import co.reality.api.view.{BuyVenueRequest, PutVenueRequest, Venue}
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
@@ -16,11 +16,25 @@ trait VenueBehaviours {
 
   def app: HttpApp[RIO[Clock, *]]
 
-  def put(id: String, putVenue: VenueRequest): RIO[Clock, Either[String, String]] = {
+  def buy(id: String, body: BuyVenueRequest): RIO[Clock, Either[String, String]] = {
+    val request: Request[RIO[Clock, *]] =
+      Request(method = Method.POST)
+        .withUri(Uri(path = s"/$context/$id"))
+        .withEntity(body.asJson)
+    for {
+      response <- app.run(request)
+      entity <- response.status match {
+        case Status.Ok => response.bodyText.compile.string.map(_.asRight)
+        case _         => response.bodyText.compile.string.map(_.asLeft)
+      }
+    } yield entity
+  }
+
+  def put(id: String, body: PutVenueRequest): RIO[Clock, Either[String, String]] = {
     val request: Request[RIO[Clock, *]] =
       Request(method = Method.PUT)
         .withUri(Uri(path = s"/$context/$id"))
-        .withEntity(putVenue.asJson)
+        .withEntity(body.asJson)
     for {
       response <- app.run(request)
       entity <- response.status match {

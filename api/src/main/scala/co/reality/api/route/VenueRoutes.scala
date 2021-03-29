@@ -14,13 +14,15 @@ object VenueRoutes {
     ZioRoutes.app(routes(layer))
 
   def routes(layer: ULayer[VenueService]): ZioHttpRoutes =
-    ZioRoutes(CreateVenueRoute(layer),
+    ZioRoutes(BuyVenueRoute(layer),
+              CreateVenueRoute(layer),
               DeleteVenueRoute(layer),
               GetAllVenuesRoute(layer),
               swaggerRoutes)
 
   val swaggerRoutes: ZioHttpRoutes =
     Swagger.routes("Venue API", "1.0",
+                   BuyVenueRoute.definition,
                    CreateVenueRoute.definition,
                    DeleteVenueRoute.definition,
                    GetAllVenuesRoute.definition)

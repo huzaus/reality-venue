@@ -7,5 +7,5 @@ object ViewGen {
   val venueRequest = for {
     name <- EntityGen.name
     price <- EntityGen.money
-  } yield VenueRequest(name, price)
+  } yield PutVenueRequest(name, price)
 }

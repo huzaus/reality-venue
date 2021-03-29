@@ -17,9 +17,12 @@ ThisBuild / scalacOptions := Seq("-unchecked",
 ThisBuild / libraryDependencies += compilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full)
 
 lazy val `reality-venue` = (project in file("."))
-  .settings(publish := {})
+  .settings(discoveredMainClasses in Compile ++= (discoveredMainClasses in (`api`, Compile)).value)
+  .dependsOn(`api`)
   .aggregate(`domain`, `api`)
 
 lazy val `domain` = (project in file("domain"))
 
-lazy val `api` = (project in file("api")).dependsOn(`domain` % "compile->compile;test->test")
+lazy val `api` = (project in file("api"))
+  .settings()
+  .dependsOn(`domain` % "compile->compile;test->test")

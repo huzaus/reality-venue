@@ -4,6 +4,10 @@ This project is a simple proof-of-concept application that allows adding `venues
 ## Usage
 The application can be started by executing `sbt run`.
 
+## Swagger
+
+http://localhost:8080/docs
+
 ### Creating/updating a venue
 You can use `PUT` and provide your own `UUID` to be sure that only one venue is created.
 ```
